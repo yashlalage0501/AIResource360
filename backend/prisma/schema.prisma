@@ -1,0 +1,75 @@
+/**
+ * Author      : Yash Lalage
+ * Description : 
+ * Created On  : April 20, 2025
+ * Version     : 1.0.0
+ * Notes       : 
+ *               - Employee model stores user details, roles, and login credentials.
+ *               - Task model defines tasks with details such as title, description, due date, and status.
+ *               - Relations: Task is assigned to Employee, and Employee can have multiple Tasks.
+ *               - Run `npx prisma migrate dev` to apply schema changes.
+ */
+
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      =  env("DATABASE_URL")
+}
+
+// model Employee {
+//   id        Int      @id @default(autoincrement())
+//   name      String
+//   email     String   @unique
+//   password  String
+//   role      String
+//   createdAt DateTime @default(now())
+//   tasks     Task[]   @relation("AssignedTasks")
+// }
+
+// model Task {
+//   id          Int      @id @default(autoincrement())
+//   title       String
+//   description String
+//   dueDate     DateTime
+//   createdAt   DateTime @default(now())
+
+//   assignedTo  Int
+//   employee    Employee @relation("AssignedTasks", fields: [assignedTo], references: [id])
+// }
+
+model Employee {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String   @unique
+  password   String
+  role       String
+  managerId  Int?     // Optional because not every employee may have a manager
+  manager    Employee? @relation("ManagerEmployees", fields: [managerId], references: [id])
+  employees  Employee[] @relation("ManagerEmployees")  // Manager can have many employees
+  tasks      Task[]    // This is the relation field for tasks assigned to this employee
+  createdAt  DateTime @default(now())
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  dueDate     DateTime
+  assignedTo  Int
+  employee    Employee @relation(fields: [assignedTo], references: [id]) // The employee assigned to the task
+  status      String   @default("Pending") // Added status field (e.g., "Pending", "In Progress", "Completed")
+  difficulty String? // Added difficulty level field
+  createdAt   DateTime @default(now())
+}
+
