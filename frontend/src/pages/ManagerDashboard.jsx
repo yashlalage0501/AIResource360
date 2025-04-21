@@ -174,7 +174,7 @@ function ManagerDashboard() {
 
       try {
         const apiResponse = await axios.post(
-          "https://76a3-35-231-88-245.ngrok-free.app/analyze",
+          "https://c19c-34-125-53-39.ngrok-free.app/analyze",
           payload,
           {
             headers: {
@@ -185,7 +185,8 @@ function ManagerDashboard() {
           }
         );
         console.log(apiResponse);
-        response = apiResponse.data; 
+        response = apiResponse.data.result; 
+        console.log("apiResponse.data.result" + apiResponse.data.result);
         setChatbotResponse(response);
       } catch (error) {
         console.error("Error during API request:", error);
